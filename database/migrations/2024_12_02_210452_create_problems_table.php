@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_color', function (Blueprint $table) {
+        Schema::create('problems', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('color_id');
-            $table->unsignedBigInteger('product_id');
+            $table->string('title');
+            $table->text('description');
+            $table->text('expected_output');
             $table->timestamps();
-
-            // Foreign key constraints
-            
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_color');
+        Schema::dropIfExists('problems');
     }
 };

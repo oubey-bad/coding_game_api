@@ -1,0 +1,41 @@
+<template>
+   <div class="container flex flex-col gap-4">
+        
+       
+        
+
+        <form >
+            
+            <div>
+
+                <input type="text" id="name" name="name" placeholder="أدخل اسم الحجم"
+                    class="bg-gray-50 w-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                     required />
+               
+            </div>
+
+
+            <button type="submit"
+                class="text-white mt-4 inline-flex justify-center items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm pr-4 py-2 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">إضافة<svg
+                    class="w-6 h-4 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 12h14m-7 7V5" />
+                </svg></button>
+
+
+
+            
+
+        </form>
+        
+        
+
+
+
+        
+
+    </div>
+</template>
+<script setup></script>
+<style scoped></style>

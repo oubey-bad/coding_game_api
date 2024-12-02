@@ -45,4 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function submissions(){
+        return $this->hasMany(Submission::class);
+    }
 }

@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('colors', function (Blueprint $table) {
+        Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Color name (e.g., Red, Blue)
-            $table->string('hex_code')->nullable(); // Hex code for the color (e.g., #FF0000)
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('problem_id');
+
+
+            $table->text('code'); // Submitted code
+            $table->string('language'); // Programming language
+            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('colors');
+        Schema::dropIfExists('submissions');
     }
 };
