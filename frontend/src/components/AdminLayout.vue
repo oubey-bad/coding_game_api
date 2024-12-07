@@ -12,13 +12,7 @@
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <img
-                                class="h-8 w-8"
-                                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                                alt="Your Company"
-                            />
-                        </div>
+                        
                         <div class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
                                 <router-link
@@ -121,7 +115,7 @@
                                         >
                                         <img
                                             class="h-8 w-8 rounded-full"
-                                            :src="user.imageUrl"
+                                            src="../assets/itc.jpg"
                                             alt=""
                                         />
                                     </MenuButton>
@@ -238,7 +232,7 @@
             </DisclosurePanel>
         </Disclosure>
 
-        <header class="bg-white shadow" dir="rtl">
+        <header class="bg-white shadow" >
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold tracking-tight text-gray-900">
                     {{ pageTitle }}
@@ -246,7 +240,7 @@
             </div>
         </header>
         <main>
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" dir="rtl">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" >
                 <router-view />
             </div>
         </main>
@@ -286,7 +280,7 @@ const user = {
 const navigation = computed(() => [
     { name: "Dashboard", href: "/admin", current: route.path === "/admin" },
     {
-        name: "Products",
+        name: "Problems",
         href: "/admin/products",
         current: route.path === "/admin/products",
     },

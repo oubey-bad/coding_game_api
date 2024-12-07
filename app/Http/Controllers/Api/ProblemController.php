@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\Submission;
+use App\Http\Controllers\Controller;
+use App\Models\Problem;
 use Illuminate\Http\Request;
 
-class SubmissionController extends Controller
+class ProblemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return response()->json(Problem::all());
     }
 
     /**
@@ -34,7 +35,7 @@ class SubmissionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Submission $submission)
+    public function show(Problem $problem)
     {
         //
     }
@@ -42,7 +43,7 @@ class SubmissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Submission $submission)
+    public function edit(Problem $problem)
     {
         //
     }
@@ -50,7 +51,7 @@ class SubmissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Submission $submission)
+    public function update(Request $request, Problem $problem)
     {
         //
     }
@@ -58,7 +59,7 @@ class SubmissionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Submission $submission)
+    public function destroy(Problem $problem)
     {
         //
     }

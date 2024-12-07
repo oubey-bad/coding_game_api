@@ -126,7 +126,7 @@ const formData = reactive({
     email:'',
     password:'',
     password_confirmation:'',
-})
+});
 
 
 </script>

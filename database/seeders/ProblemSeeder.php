@@ -16,7 +16,6 @@ class ProblemSeeder extends Seeder
         Problem::create([
             'title' => 'Print Hello, World!',
             'description' => 'Write a program to print "Hello, World!"',
-            
             'expected_output' => 'Hello, World!',
         ]);
     }

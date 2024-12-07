@@ -2,15 +2,15 @@ import { defineStore } from "pinia";
 export const useSubmission = defineStore("submission", {
     state: () => {
         return {
-            problem:null,
+            problem: null,
             output: null,
             errors: {},
         };
     },
     actions: {
-        async getProblem() {
+        async getProblems() {
             if (localStorage.getItem("token")) {
-                const res = await fetch("/api/user", {
+                const res = await fetch("/api/problems", {
                     headers: {
                         authorization: `Bearer ${localStorage.getItem(
                             "token"
@@ -21,19 +21,20 @@ export const useSubmission = defineStore("submission", {
                 if (res.ok) {
                     this.problem = data;
                 }
+                return data;
             }
         },
-        async execute(apiRoute, formData, router) {
-            const res = await fetch(`/api/${apiRoute}`, {
+        async submitCode(formData) {
+            const res = await fetch(`/api/submission`, {
                 method: "POST",
                 body: JSON.stringify(formData),
             });
-           
+
             const data = await res.json();
-            if (data.data.error) {
+            if (data.error) {
                 this.errors = data.data;
             } else {
-                localStorage.setItem("token", data.data.token);
+                
                 this.user = data.data.name;
                 this.router.push({ name: "home" });
             }
