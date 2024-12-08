@@ -15,9 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->text('expected_output');
             $table->timestamps();
         });
+        Schema::create('test_cases', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('problem_id');
+            $table->text('expected_output'); // Store potentially larger outputs
+            $table->text('user_output')->nullable(); // Nullable in case the user hasn't submitted yet
+            $table->string('error')->nullable(); // Nullable for no errors
+            $table->unsignedInteger('points'); // Points should be an integer
+            $table->timestamps();
+        });
+        
     }
 
     /**

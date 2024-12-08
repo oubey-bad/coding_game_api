@@ -14,11 +14,9 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name'=>'الهواتف الذكية'],
-            ['name'=>'أجهزة الألعاب'],
-            ['name'=>'الأجهزة المنزلية'],
-            ['name'=>' الملابس'],
-            
+            ['name' => 'Easy', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Medium', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Hard', 'created_at' => now(), 'updated_at' => now()],
         ];
         foreach($categories as $category){
             category::create($category);
