@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\Admin\ColorController;
+use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\ProblemController;
 use App\Http\Controllers\Api\SubmissionController;
+use App\Models\Problem;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,10 +35,19 @@ Route::apiResource('problems', ProblemController::class)->only(['index', 'store'
 
 Route::apiResource('submisssion', SubmissionController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 
+// lobby
+// problem list and submission
+//leaderboard
+Route::get('/submissions/game-end', [SubmissionController::class, 'gameEnd']);
+Route::get('/submissions/create', [SubmissionController::class, 'create']);
+Route::post('/submissions/store', [SubmissionController::class, 'store']);
+Route::post('/submissions/check-accuracy', [SubmissionController::class, 'checkAccuracy']);
 
-Route::apiResource('products', App\Http\Controllers\ProductController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 
-Route::apiResource('categories', App\Http\Controllers\CategoryController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+Route::get('/problems', [ProblemController::class, 'problemsWithStatus']);
 
-Route::apiResource('colors', ColorController::class)->only(['index','store','edit'])->middleware(Authenticate::using('sanctum'));
+
+Route::get('/leaderboard/day1', [LeaderboardController::class, 'leaderboardDay1']);
+Route::get('/leaderboard/day2', [LeaderboardController::class, 'leaderboardDay2']);
+
 

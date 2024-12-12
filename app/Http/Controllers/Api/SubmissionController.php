@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Problem;
 use App\Models\Submission;
 use App\Models\TestCases;
+use App\Models\UserScores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -14,10 +15,31 @@ class SubmissionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+    
+     public function gameEnd(Request $request)
+     {
+         // Create a new UserScores instance
+         $user_scores = new UserScores();
+     
+         // Assign the user ID
+         $user_scores->user_id = $request->user->id;
+     
+         // Assign the time from the request
+         $user_scores->time = $request->time;
+     
+         // Calculate the total score
+         $user_scores->total_score = Submission::where('user_id', $request->user->id)->sum('total_points');
+     
+        //qualified logic 
+        //status changes ..
+
+
+         // Save the new user score
+         $user_scores->save();
+     
+         return response()->json(['success' => true, 'message' => 'Score saved successfully']);
+     }
+
 
     /**
      * Show the form for creating a new resource.

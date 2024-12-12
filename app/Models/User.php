@@ -48,6 +48,9 @@ class User extends Authenticatable
     public function submissions(){
         return $this->hasMany(Submission::class);
     }
+    public function userScores(){
+        return $this->hasOne(UserScores::class);
+    }
 
     public function userProblemStatuses(){
         return $this->belongsToMany(User::class,'user_problem_status');

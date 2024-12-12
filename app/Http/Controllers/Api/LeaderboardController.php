@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Problem;
 use Illuminate\Http\Request;
 
-class ProblemController extends Controller
+class LeaderboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function problemsWithStatus(Request $request)
+    public function leaderboardDay1()
     {
-        
-        return response()->json(Problem::with('submissions')->where(['day_number'=>$request->day_number,'submissions.user_id'=>$request->user_id])->orderBy('difficulty'));
+        //
+    }
+    public function leaderboardDay2()
+    {
+        //
     }
 
     /**
@@ -36,7 +38,7 @@ class ProblemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Problem $problem)
+    public function show(string $id)
     {
         //
     }
@@ -44,7 +46,7 @@ class ProblemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Problem $problem)
+    public function edit(string $id)
     {
         //
     }
@@ -52,7 +54,7 @@ class ProblemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Problem $problem)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -60,7 +62,7 @@ class ProblemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Problem $problem)
+    public function destroy(string $id)
     {
         //
     }

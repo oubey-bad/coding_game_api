@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('code'); // Submitted code
             $table->string('language'); // Programming language
             $table->unsignedInteger('accuracy'); // Points should be an integer
+            $table->unsignedInteger('total_points'); // Points should be an integer
 
             $table->boolean('isCompleted')->default(false); 
             $table->timestamps();

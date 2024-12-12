@@ -20,6 +20,15 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+        Schema::create('user_scores', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Foreign key with cascading delete
+            $table->float('total_score', 8, 2)->default(0); // Use float for scores with precision
+            $table->unsignedInteger('time')->default(0); // Time in seconds
+            $table->enum('status',['disqualified','qualified','nice try','winner'])->nullable();
+            $table->timestamps();
+        });
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
