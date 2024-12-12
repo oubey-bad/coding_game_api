@@ -11,9 +11,10 @@ class ProblemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function indexDay(Request $request)
     {
-        return response()->json(Problem::all());
+        
+        return response()->json(Problem::with('submissions')->where(['day_number'=>$request->day_number,'submissions.user_id'=>$request->user_id])->orderBy('difficulty'));
     }
 
     /**

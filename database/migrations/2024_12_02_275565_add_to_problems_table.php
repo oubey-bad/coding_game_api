@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreign('problem_id')->references('id')->on('problems')->onDelete('cascade');
             
         });
+        
     }
 
     /**
@@ -25,5 +26,6 @@ return new class extends Migration
         Schema::table('test_cases', function (Blueprint $table) {
             //
         });
+       
     }
 };

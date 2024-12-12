@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Problem;
 use App\Models\Submission;
+use App\Models\TestCases;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -21,9 +22,11 @@ class SubmissionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Submission $submission)
     {
-        //
+        $problem = Problem::findOrFail($submission);
+        return response()->json($problem);
+
     }
 
     /**
@@ -37,40 +40,114 @@ class SubmissionController extends Controller
             "user_id" => "required|exists:users,id",
             "language" => "required|string",
             "code" => "required|string",
-            "input" => "nullable|string",  // Inputs as string, will split by newline
+            // "input" => "nullable|string",  // Inputs as string, will split by newline
         ]);
 
         // Find the problem
         $problem = Problem::findOrFail($request->problem_id);
 
-        // Get the inputs for the code execution (if provided)
-        $inputs = $request->input('input') ? explode(" ", $request->input('input')) : [];
+        // Fetch all test cases for the problem
+        $testCases = TestCases::where('problem_id', $request->problem_id)->get();
 
-        // Get the expected output from the problem
-        // $expectedOutput = $problem->expected;
-        $expectedOutput = "'1\n";
+        // Variables to track results
+        $totalCases = $testCases->count();
+        $passedCases = 0;
 
-        // Call the custom execution method
-        $executionResult = $this->executeCode($request->code, $request->language, $inputs);
+        foreach ($testCases as $testCase) {
+            // Define headers for the API request
+            $headers = [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
 
-        if (isset($executionResult['error'])) {
-            // Handle execution errors
-            return response()->json(['message' => 'Code execution failed.', 'error' => $executionResult['error']], 500);
+            // Prepare the request body
+            $body = [
+                'code' => $request->input('code'), // User's submitted code
+                'language' => $request->input('language'), // Programming language (e.g., Python, C++)
+                'input' => $testCase->input_data, // Input from the test case
+            ];
+
+            try {
+                // Send the request to the code execution API
+                $response = Http::withHeaders($headers)
+                    ->post('https://api.codex.jaagrav.in', $body);
+
+                $result = $response->json();
+
+                // Compare output with the expected output
+                if (trim($result['output'] ?? '') === trim($testCase->expected_output)) {
+                    $passedCases++;
+                }
+            } catch (\Exception $e) {
+                // Log the exception or handle it as needed
+                continue; // Skip this test case on error
+            }
         }
 
-        // Compare actual output with expected output
-        if (trim($executionResult['output']) === trim($expectedOutput)) {
-            return response()->json([
-                'message' => 'Success! Your code passed all test cases.',
-                'output' => $executionResult['output']
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'Failed! Your code output is incorrect.',
-                'output' => $executionResult['output']
-            ]);
-        }
+        // Calculate accuracy percentage
+        $accuracy = ($passedCases / $totalCases) * 100;
+        $request['accuracy'] = $accuracy;
+        Submission::created($request);
+        // Return accuracy percentage
+        return response()->json([
+            'success' => true,
+            'accuracy' => round($accuracy, 2), // Rounded to 2 decimal places
+        ]);
     }
+
+    public function checkAccuracy(Request $request)
+    {
+        // Find the problem
+        // $problem = Problem::findOrFail($request->problem_id);
+
+        // Fetch all test cases for the problem
+        $testCases = TestCases::where('problem_id', $request->problem_id)->get();
+
+        // Variables to track results
+        $totalCases = $testCases->count();
+        $passedCases = 0;
+
+        foreach ($testCases as $testCase) {
+            // Define headers for the API request
+            $headers = [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            // Prepare the request body
+            $body = [
+                'code' => $request->input('code'), // User's submitted code
+                'language' => $request->input('language'), // Programming language (e.g., Python, C++)
+                'input' => $testCase->input_data, // Input from the test case
+            ];
+
+            try {
+                // Send the request to the code execution API
+                $response = Http::withHeaders($headers)
+                    ->post('https://api.codex.jaagrav.in', $body);
+
+                $result = $response->json();
+
+                // Compare output with the expected output
+                if (trim($result['output'] ?? '') === trim($testCase->expected_output)) {
+                    $passedCases++;
+                }
+            } catch (\Exception $e) {
+                // Log the exception or handle it as needed
+                continue; // Skip this test case on error
+            }
+        }
+
+        // Calculate accuracy percentage
+        $accuracy = ($passedCases / $totalCases) * 100;
+
+        // Return accuracy percentage
+        return response()->json([
+            'success' => true,
+            'accuracy' => round($accuracy, 2), // Rounded to 2 decimal places
+        ]);
+    }
+
 
     /**
      * Execute the code using the custom compiler method.
@@ -143,26 +220,7 @@ class SubmissionController extends Controller
 
 
 
-    // $response = Http::withHeaders($headers)
-    //         ->post('https://api.codex.jaagrav.in', $body);
 
-    //         $result = $response->json();
-    // while ($result['error'] === '') {
-
-
-    //     if (trim($result['output']) === trim($problem->expected_output)) {
-    //         return response()->json(['message' => 'Success! Your code passed all test cases.', 'output' => $result['output']]);
-    //     } else {
-    //         return response()->json(['message' => 'Failed! Your code output is incorrect.', 'output' => $result['output']]);
-    //     }
-
-
-
-    //     $response = Http::withHeaders($headers)
-    //         ->post('https://api.codex.jaagrav.in', $body);
-
-    //         $result = $response->json();
-    // }
 
 
 
