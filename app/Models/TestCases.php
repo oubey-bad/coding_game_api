@@ -12,7 +12,6 @@ class TestCases extends Model
         'problem_id',
         'expected_output',
         'user_output',
-        'error',
         'points',
     ];
 

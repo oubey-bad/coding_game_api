@@ -40,7 +40,7 @@ Route::apiResource('submisssion', SubmissionController::class)->only(['index', '
 //leaderboard
 Route::get('/submissions/game-end', [SubmissionController::class, 'gameEnd']);
 Route::get('/submissions/create', [SubmissionController::class, 'create']);
-Route::post('/submissions/store', [SubmissionController::class, 'store']);
+Route::post('/submissions/submission-code', [SubmissionController::class, 'submissionCode']);
 Route::post('/submissions/check-accuracy', [SubmissionController::class, 'checkAccuracy']);
 
 

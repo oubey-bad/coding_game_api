@@ -29,7 +29,7 @@ return new class extends Migration
             $table->text('input')->nullable(); // Store potentially larger outputs
             $table->text('expected_output'); // Store potentially larger outputs
             $table->text('user_output')->nullable(); // Nullable in case the user hasn't submitted yet
-            $table->string('error')->nullable(); // Nullable for no errors
+            
             $table->unsignedInteger('points'); // Points should be an integer
             $table->timestamps();
         });

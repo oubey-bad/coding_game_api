@@ -15,30 +15,30 @@ class SubmissionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    
-     public function gameEnd(Request $request)
-     {
-         // Create a new UserScores instance
-         $user_scores = new UserScores();
-     
-         // Assign the user ID
-         $user_scores->user_id = $request->user->id;
-     
-         // Assign the time from the request
-         $user_scores->time = $request->time;
-     
-         // Calculate the total score
-         $user_scores->total_score = Submission::where('user_id', $request->user->id)->sum('total_points');
-     
+
+    public function gameEnd(Request $request)
+    {
+        // Create a new UserScores instance
+        $user_scores = new UserScores();
+
+        // Assign the user ID
+        $user_scores->user_id = $request->user->id;
+
+        // Assign the time from the request
+        $user_scores->time = $request->time;
+
+        // Calculate the total score
+        $user_scores->total_score = Submission::where('user_id', $request->user->id)->sum('total_points');
+
         //qualified logic 
         //status changes ..
 
 
-         // Save the new user score
-         $user_scores->save();
-     
-         return response()->json(['success' => true, 'message' => 'Score saved successfully']);
-     }
+        // Save the new user score
+        $user_scores->save();
+
+        return response()->json(['success' => true, 'message' => 'Score saved successfully']);
+    }
 
 
     /**
@@ -48,94 +48,67 @@ class SubmissionController extends Controller
     {
         $problem = Problem::findOrFail($submission);
         return response()->json($problem);
-
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function submissionCode(Request $request)
     {
-        // Validate the request
-        $request->validate([
-            "problem_id" => "required|exists:problems,id",
-            "user_id" => "required|exists:users,id",
-            "language" => "required|string",
-            "code" => "required|string",
-            // "input" => "nullable|string",  // Inputs as string, will split by newline
-        ]);
+        // Call the checkAccuracy method and get the response
+        $accuracyResponse = $this->checkAccuracy($request);
 
-        // Find the problem
-        $problem = Problem::findOrFail($request->problem_id);
-
-        // Fetch all test cases for the problem
-        $testCases = TestCases::where('problem_id', $request->problem_id)->get();
-
-        // Variables to track results
-        $totalCases = $testCases->count();
-        $passedCases = 0;
-
-        foreach ($testCases as $testCase) {
-            // Define headers for the API request
-            $headers = [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ];
-
-            // Prepare the request body
-            $body = [
-                'code' => $request->input('code'), // User's submitted code
-                'language' => $request->input('language'), // Programming language (e.g., Python, C++)
-                'input' => $testCase->input_data, // Input from the test case
-            ];
-
-            try {
-                // Send the request to the code execution API
-                $response = Http::withHeaders($headers)
-                    ->post('https://api.codex.jaagrav.in', $body);
-
-                $result = $response->json();
-
-                // Compare output with the expected output
-                if (trim($result['output'] ?? '') === trim($testCase->expected_output)) {
-                    $passedCases++;
-                }
-            } catch (\Exception $e) {
-                // Log the exception or handle it as needed
-                continue; // Skip this test case on error
-            }
+        // If the accuracy check fails, return an error response
+        if (!$accuracyResponse['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $accuracyResponse['message'] ?? 'An error occurred during accuracy calculation.',
+            ], 400);
         }
 
-        // Calculate accuracy percentage
-        $accuracy = ($passedCases / $totalCases) * 100;
-        $request['accuracy'] = $accuracy;
-        Submission::created($request);
-        // Return accuracy percentage
+        // Update the submission status
+        $submission = Submission::findOrFail($accuracyResponse['submission_id']);
+        $submission->isCompleted = true;
+        $submission->save();
+
+        // Return the accuracy percentage
         return response()->json([
             'success' => true,
-            'accuracy' => round($accuracy, 2), // Rounded to 2 decimal places
+            'accuracy' => $accuracyResponse['accuracy'], // Rounded accuracy
         ]);
     }
 
     public function checkAccuracy(Request $request)
     {
-        // Find the problem
-        // $problem = Problem::findOrFail($request->problem_id);
+        // Validate the request
+        $request->validate([
+            'problem_id' => 'required|exists:problems,id',
+            'user_id' => 'required|exists:users,id',
+            'language' => 'required|string',
+            'code' => 'required|string',
+        ]);
 
         // Fetch all test cases for the problem
         $testCases = TestCases::where('problem_id', $request->problem_id)->get();
+
+        if ($testCases->isEmpty()) {
+            return [
+                'success' => false,
+                'message' => 'No test cases available for this problem.',
+            ];
+        }
 
         // Variables to track results
         $totalCases = $testCases->count();
         $passedCases = 0;
 
-        foreach ($testCases as $testCase) {
-            // Define headers for the API request
-            $headers = [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ];
+        // Define headers for the API request
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
 
+        foreach ($testCases as $testCase) {
             // Prepare the request body
             $body = [
                 'code' => $request->input('code'), // User's submitted code
@@ -145,30 +118,41 @@ class SubmissionController extends Controller
 
             try {
                 // Send the request to the code execution API
-                $response = Http::withHeaders($headers)
-                    ->post('https://api.codex.jaagrav.in', $body);
+                $response = Http::withHeaders($headers)->post('https://api.codex.jaagrav.in', $body);
 
+                // Decode the response
                 $result = $response->json();
 
                 // Compare output with the expected output
-                if (trim($result['output'] ?? '') === trim($testCase->expected_output)) {
+                if (isset($result['output']) && trim($result['output']) === trim($testCase->expected_output)) {
                     $passedCases++;
                 }
             } catch (\Exception $e) {
-                // Log the exception or handle it as needed
-                continue; // Skip this test case on error
+                // Log the exception and skip the test case
+                \log::error('Code execution error: ' . $e->getMessage());
+                continue;
             }
         }
 
         // Calculate accuracy percentage
-        $accuracy = ($passedCases / $totalCases) * 100;
+        $accuracy = ($totalCases > 0) ? ($passedCases / $totalCases) * 100 : 0;
 
-        // Return accuracy percentage
-        return response()->json([
+        // Create a submission record
+        $submission = new Submission();
+        $submission->user_id = $request->user_id;
+        $submission->problem_id = $request->problem_id;
+        $submission->code = $request->code;
+        $submission->language = $request->language; // Fixed typo
+        $submission->accuracy = round($accuracy, 2); // Optional: Store accuracy in submission
+        $submission->save();
+
+        return [
             'success' => true,
-            'accuracy' => round($accuracy, 2), // Rounded to 2 decimal places
-        ]);
+            'submission_id' => $submission->id,
+            'accuracy' => round($accuracy, 2), // Rounded accuracy
+        ];
     }
+
 
 
     /**
