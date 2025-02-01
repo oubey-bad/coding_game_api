@@ -44,10 +44,11 @@ class SubmissionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Submission $submission)
+    public function problemWorkshop(Submission $submission)
     {
         $problem = Problem::findOrFail($submission);
-        return response()->json($problem);
+        $submission = Submission::findOrFail($submission);
+        return response()->json([$problem,$submission]);
     }
 
     /**
